@@ -72,33 +72,23 @@
             android:layout_width="0dp"
             android:layout_height="60dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/scene"
+            android:src="@drawable/bg_scene"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/onCreateBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:text="onCreate"
-            app:layout_constraintBottom_toBottomOf="@id/headerIv"
-            app:layout_constraintStart_toStartOf="@id/headerIv"
-            app:layout_constraintTop_toTopOf="@id/headerIv" />
-
         <TextView
-            android:id="@+id/msgTv"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:gravity="center"
+            android:id="@+id/headerTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BottomSheet"
             android:textColor="@android:color/white"
-            android:textSize="15sp"
-            android:textStyle="bold"
+            android:textSize="20sp"
+            android:typeface="monospace"
             app:layout_constraintBottom_toBottomOf="@id/headerIv"
             app:layout_constraintEnd_toEndOf="@id/headerIv"
-            app:layout_constraintStart_toEndOf="@id/onCreateBtn"
-            app:layout_constraintTop_toTopOf="@+id/headerIv"
-            tools:text="layout" />
+            app:layout_constraintStart_toStartOf="@id/headerIv"
+            app:layout_constraintTop_toTopOf="@id/headerIv" />
 
         <android.support.v4.widget.NestedScrollView
             android:id="@+id/nestedScrollView"
@@ -113,7 +103,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scaleType="center"
-                android:src="@drawable/scene" />
+                android:src="@drawable/bg_scene" />
         </android.support.v4.widget.NestedScrollView>
 
     </android.support.constraint.ConstraintLayout>

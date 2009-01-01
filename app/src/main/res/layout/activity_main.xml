@@ -7,25 +7,27 @@
     android:background="@color/colorPrimary"
     tools:context="com.infinitytech.mapfoo.MainActivity">
 
-    <FrameLayout
-        android:id="@+id/mapLayout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@color/colorPrimaryDark"
-        app:layout_constraintBottom_toTopOf="@+id/goBtn"
+    <Button
+        android:id="@+id/goBtn"
+        style="@style/Base.Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show Map"
+        android:textAllCaps="false"
+        android:textSize="20sp"
+        android:typeface="monospace"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/goBtn"
+    <FrameLayout
+        android:id="@+id/mapLayout"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/colorAccent"
-        android:text="Show Map"
-        android:textAllCaps="false"
-        android:textColor="@android:color/white"
+        android:layout_height="0dp"
+        android:elevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

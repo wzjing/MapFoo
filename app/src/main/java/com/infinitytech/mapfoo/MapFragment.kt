@@ -1,5 +1,6 @@
 package com.infinitytech.mapfoo
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -23,6 +24,8 @@ import com.amap.api.maps.CameraUpdateFactory
 import com.amap.api.maps.CustomRenderer
 import com.amap.api.maps.model.*
 import kotlinx.android.synthetic.main.fragment_map.*
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.support.v4.onUiThread
 import pl.droidsonroids.gif.GifDrawable
 import java.util.*
 import javax.microedition.khronos.egl.EGLConfig
@@ -34,8 +37,6 @@ class MapFragment : Fragment(), LoaderManager.LoaderCallbacks<Boolean> {
     private val d = { msg: String -> Log.d(MapFragment::class.simpleName, msg) }
 
     private val ktag = "MyTest"
-
-    private var mListener: OnFragmentInteractionListener? = null
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -50,29 +51,61 @@ class MapFragment : Fragment(), LoaderManager.LoaderCallbacks<Boolean> {
         val map = mapView.map
         map.mapType = AMap.MAP_TYPE_NORMAL
 
-        val gif = GifDrawable(resources, R.drawable.car)
-        val matrix = Matrix().apply { postScale(1.5f, 1.5f) }
         val icons = ArrayList(
-                (0..gif.numberOfFrames).map {
-                    gif.seekToFrameAndGet(it)
-                }.map {
-                    BitmapDescriptorFactory.fromBitmap(Bitmap.createBitmap(it, 0, 0, it.width, it.height, matrix, true))
+                with(GifDrawable(resources, R.drawable.gif_walk)) {
+                    (0..numberOfFrames).map {
+                        seekToFrameAndGet(it)
+                    }.map {
+                        BitmapDescriptorFactory.fromBitmap(Bitmap.createBitmap(it, 0, 0, it.width, it.height, null, true))
+                    }
                 })
+
         var index = 0
-        val nextFrame = {
+        val nextFrame = { count: Int ->
+            index += count
             if (index >= icons.size) {
-                index = 0
+                index -= (icons.size - 1)
             }
-            val result = icons[index]
-            index++
-            result
+            icons[index]
         }
+
+        // Bike Marker
         val marker = map.addMarker(MarkerOptions().apply {
             icon(icons.firstOrNull())
-            period(4)
             anchor(0.5f, 0.9f)
+            period(1)
             position(LatLng(39.9, 116.4))
         })
+
+//        // Walk Marker
+//        map.addMarker(MarkerOptions().apply {
+//            icons(ArrayList(
+//                    with(GifDrawable(resources, R.drawable.gif_walk)) {
+//                        (0..numberOfFrames).map {
+//                            seekToFrameAndGet(it)
+//                        }.map {
+//                            BitmapDescriptorFactory.fromBitmap(Bitmap.createBitmap(it, 0, 0, it.width, it.height, null, true))
+//                        }
+//                    }))
+//            period(20)
+//            anchor(0.5f, 0.9f)
+//            position(LatLng(39.9, 116.39))
+//        })
+//
+//        // Car Marker
+//        map.addMarker(MarkerOptions().apply {
+//            icons(ArrayList(
+//                    with(GifDrawable(resources, R.drawable.gif_car)) {
+//                        (0..numberOfFrames).map {
+//                            seekToFrameAndGet(it)
+//                        }.map {
+//                            BitmapDescriptorFactory.fromBitmap(Bitmap.createBitmap(it, 0, 0, it.width, it.height, null, true))
+//                        }
+//                    }))
+//            period(20)
+//            anchor(0.5f, 0.9f)
+//            position(LatLng(39.9, 116.41))
+//        })
 
         map.addPolyline(PolylineOptions().apply {
             color(Color.RED)
@@ -90,26 +123,29 @@ class MapFragment : Fragment(), LoaderManager.LoaderCallbacks<Boolean> {
 
         map.setCustomRenderer(object : CustomRenderer {
             private var lastFrameTime = 0L
+            private val timeStamp = 30
 
             override fun OnMapReferencechanged() {}
 
             override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
-            }
-
-            override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
                 lastFrameTime = System.currentTimeMillis()
             }
 
+            override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
+            }
+
             override fun onDrawFrame(gl: GL10?) {
-                if (System.currentTimeMillis() - lastFrameTime > 10) {
+                val realStamp: Int = (System.currentTimeMillis() - lastFrameTime).toInt()
+                if (realStamp > timeStamp) {
                     i("Refreshing")
-                    marker.setIcon(nextFrame.invoke())
+                    doAsync @Synchronized {
+                        marker.setIcon(nextFrame(realStamp / timeStamp))
+                    }
                     lastFrameTime = System.currentTimeMillis()
                 }
             }
         })
 
-        onCreateBtn.setOnClickListener { mapView.onCreate(null) }
         val small = LatLngBounds(LatLng(39.84, 116.36), LatLng(39.92, 116.44))
         val big = LatLngBounds(LatLng(39.88, 116.38), LatLng(39.92, 116.42))
         map.moveCamera(CameraUpdateFactory.newLatLngBounds(big, 15))
@@ -121,11 +157,11 @@ class MapFragment : Fragment(), LoaderManager.LoaderCallbacks<Boolean> {
                 }
             }
 
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                msgTv.text = "offset: $slideOffset"
-            }
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
 
         })
+
+        backBtn.setOnClickListener { fragmentManager.popBackStack() }
 
     }
 
@@ -169,32 +205,6 @@ class MapFragment : Fragment(), LoaderManager.LoaderCallbacks<Boolean> {
         Log.d(ktag, "onDestroyView")
         mapView.onDestroy()
         super.onDestroyView()
-    }
-
-    fun onButtonPressed(uri: Uri) {
-        if (mListener != null) {
-            mListener!!.onFragmentInteraction(uri)
-        }
-    }
-
-    override fun onAttach(context: Context?) {
-        Log.d(ktag, "onAttach")
-        super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            mListener = context
-        } else {
-            throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
-        }
-    }
-
-    override fun onDetach() {
-        Log.d(ktag, "onDetach")
-        super.onDetach()
-        mListener = null
-    }
-
-    interface OnFragmentInteractionListener {
-        fun onFragmentInteraction(uri: Uri)
     }
 
     /* --------------------Data----------------------- */
