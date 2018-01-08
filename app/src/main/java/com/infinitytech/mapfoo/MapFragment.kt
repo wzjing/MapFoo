@@ -112,6 +112,7 @@ class MapFragment : Fragment(), LoaderManager.LoaderCallbacks<Boolean> {
         onCreateBtn.setOnClickListener { mapView.onCreate(null) }
         val small = LatLngBounds(LatLng(39.84, 116.36), LatLng(39.92, 116.44))
         val big = LatLngBounds(LatLng(39.88, 116.38), LatLng(39.92, 116.42))
+        map.moveCamera(CameraUpdateFactory.newLatLngBounds(big, 15))
         BottomSheetBehavior.from(bottomSheet).setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 when (newState) {
