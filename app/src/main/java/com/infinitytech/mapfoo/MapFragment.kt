@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.Matrix
 import android.net.Uri
 import android.os.Bundle
+import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.Fragment
 import android.support.v4.app.LoaderManager
 import android.support.v4.content.AsyncTaskLoader
@@ -18,6 +19,7 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import com.amap.api.maps.AMap
+import com.amap.api.maps.CameraUpdateFactory
 import com.amap.api.maps.CustomRenderer
 import com.amap.api.maps.model.*
 import kotlinx.android.synthetic.main.fragment_map.*
@@ -48,7 +50,6 @@ class MapFragment : Fragment(), LoaderManager.LoaderCallbacks<Boolean> {
         val map = mapView.map
         map.mapType = AMap.MAP_TYPE_NORMAL
 
-
         val gif = GifDrawable(resources, R.drawable.car)
         val matrix = Matrix().apply { postScale(1.5f, 1.5f) }
         val icons = ArrayList(
@@ -63,7 +64,7 @@ class MapFragment : Fragment(), LoaderManager.LoaderCallbacks<Boolean> {
                 index = 0
             }
             val result = icons[index]
-            index ++
+            index++
             result
         }
         val marker = map.addMarker(MarkerOptions().apply {
@@ -100,13 +101,31 @@ class MapFragment : Fragment(), LoaderManager.LoaderCallbacks<Boolean> {
             }
 
             override fun onDrawFrame(gl: GL10?) {
-                if (System.currentTimeMillis() - lastFrameTime > 40) {
+                if (System.currentTimeMillis() - lastFrameTime > 10) {
                     i("Refreshing")
                     marker.setIcon(nextFrame.invoke())
                     lastFrameTime = System.currentTimeMillis()
                 }
             }
         })
+
+        onCreateBtn.setOnClickListener { mapView.onCreate(null) }
+        val small = LatLngBounds(LatLng(39.84, 116.36), LatLng(39.92, 116.44))
+        val big = LatLngBounds(LatLng(39.88, 116.38), LatLng(39.92, 116.42))
+        BottomSheetBehavior.from(bottomSheet).setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                when (newState) {
+                    BottomSheetBehavior.STATE_EXPANDED -> map.animateCamera(CameraUpdateFactory.newLatLngBounds(small, 15))
+                    BottomSheetBehavior.STATE_COLLAPSED -> map.animateCamera(CameraUpdateFactory.newLatLngBounds(big, 15))
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                msgTv.text = "offset: $slideOffset"
+            }
+
+        })
+
     }
 
     override fun onResume() {
