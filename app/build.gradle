@@ -47,6 +47,13 @@ android {
         }
     }
 
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "${rootProject.name}_${variant.name}_${variant.versionName}_${new Date().format("yyyyMMdd-HHmm")}.apk"
+        }
+
+    }
+
 }
 
 dependencies {
@@ -68,6 +75,8 @@ dependencies {
     implementation 'com.amap.api:location:3.6.1'
     implementation 'com.amap.api:search:5.3.1'
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.8'
+
+    implementation 'me.yokeyword:fragmentation:1.2.4'
 }
 kotlin {
     experimental {

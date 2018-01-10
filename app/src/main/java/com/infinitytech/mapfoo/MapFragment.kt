@@ -1,12 +1,9 @@
 package com.infinitytech.mapfoo
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.Matrix
-import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.Fragment
@@ -25,7 +22,6 @@ import com.amap.api.maps.CustomRenderer
 import com.amap.api.maps.model.*
 import kotlinx.android.synthetic.main.fragment_map.*
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.support.v4.onUiThread
 import pl.droidsonroids.gif.GifDrawable
 import java.util.*
 import javax.microedition.khronos.egl.EGLConfig
@@ -37,6 +33,8 @@ class MapFragment : Fragment(), LoaderManager.LoaderCallbacks<Boolean> {
     private val d = { msg: String -> Log.d(MapFragment::class.simpleName, msg) }
 
     private val ktag = "MyTest"
+    private lateinit var marker: Marker
+    private lateinit var nextFrame: (count: Int) -> BitmapDescriptor
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -61,19 +59,18 @@ class MapFragment : Fragment(), LoaderManager.LoaderCallbacks<Boolean> {
                 })
 
         var index = 0
-        val nextFrame = { count: Int ->
+        nextFrame = { count: Int ->
             index += count
             if (index >= icons.size) {
-                index -= (icons.size - 1)
+                index -= icons.size
             }
             icons[index]
         }
 
         // Bike Marker
-        val marker = map.addMarker(MarkerOptions().apply {
+        marker = map.addMarker(MarkerOptions().apply {
             icon(icons.firstOrNull())
             anchor(0.5f, 0.9f)
-            period(1)
             position(LatLng(39.9, 116.4))
         })
 
@@ -114,37 +111,14 @@ class MapFragment : Fragment(), LoaderManager.LoaderCallbacks<Boolean> {
             var longitude = 116.4
             val point = LatLng(latitude, longitude)
             add(point)
-            for (i in 0..800) {
+            for (i in 0..400) {
                 latitude += 0.1 * (Math.random() - 0.5)
                 longitude += 0.01
                 add(LatLng(latitude, longitude))
             }
         })
 
-        map.setCustomRenderer(object : CustomRenderer {
-            private var lastFrameTime = 0L
-            private val timeStamp = 30
-
-            override fun OnMapReferencechanged() {}
-
-            override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
-                lastFrameTime = System.currentTimeMillis()
-            }
-
-            override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
-            }
-
-            override fun onDrawFrame(gl: GL10?) {
-                val realStamp: Int = (System.currentTimeMillis() - lastFrameTime).toInt()
-                if (realStamp > timeStamp) {
-                    i("Refreshing")
-                    doAsync @Synchronized {
-                        marker.setIcon(nextFrame(realStamp / timeStamp))
-                    }
-                    lastFrameTime = System.currentTimeMillis()
-                }
-            }
-        })
+        map.setCustomRenderer(renderer)
 
         val small = LatLngBounds(LatLng(39.84, 116.36), LatLng(39.92, 116.44))
         val big = LatLngBounds(LatLng(39.88, 116.38), LatLng(39.92, 116.42))
@@ -163,6 +137,31 @@ class MapFragment : Fragment(), LoaderManager.LoaderCallbacks<Boolean> {
 
         backBtn.setOnClickListener { fragmentManager.popBackStack() }
 
+    }
+
+    private val renderer = object : CustomRenderer {
+        private var lastFrameTime = 0L
+        private val timeStamp = 40
+
+        override fun OnMapReferencechanged() {}
+
+        override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
+            lastFrameTime = System.currentTimeMillis()
+        }
+
+        override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
+        }
+
+        override fun onDrawFrame(gl: GL10?) {
+            val realStamp: Int = (System.currentTimeMillis() - lastFrameTime).toInt()
+            if (realStamp > timeStamp) {
+                i("Refreshing")
+                doAsync @Synchronized {
+                    marker.setIcon(nextFrame(realStamp / timeStamp))
+                }
+                lastFrameTime = System.currentTimeMillis()
+            }
+        }
     }
 
     override fun onResume() {
