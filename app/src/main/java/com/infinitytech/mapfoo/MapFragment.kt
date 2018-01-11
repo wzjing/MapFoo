@@ -74,36 +74,6 @@ class MapFragment : Fragment(), LoaderManager.LoaderCallbacks<Boolean> {
             position(LatLng(39.9, 116.4))
         })
 
-//        // Walk Marker
-//        map.addMarker(MarkerOptions().apply {
-//            icons(ArrayList(
-//                    with(GifDrawable(resources, R.drawable.gif_walk)) {
-//                        (0..numberOfFrames).map {
-//                            seekToFrameAndGet(it)
-//                        }.map {
-//                            BitmapDescriptorFactory.fromBitmap(Bitmap.createBitmap(it, 0, 0, it.width, it.height, null, true))
-//                        }
-//                    }))
-//            period(20)
-//            anchor(0.5f, 0.9f)
-//            position(LatLng(39.9, 116.39))
-//        })
-//
-//        // Car Marker
-//        map.addMarker(MarkerOptions().apply {
-//            icons(ArrayList(
-//                    with(GifDrawable(resources, R.drawable.gif_car)) {
-//                        (0..numberOfFrames).map {
-//                            seekToFrameAndGet(it)
-//                        }.map {
-//                            BitmapDescriptorFactory.fromBitmap(Bitmap.createBitmap(it, 0, 0, it.width, it.height, null, true))
-//                        }
-//                    }))
-//            period(20)
-//            anchor(0.5f, 0.9f)
-//            position(LatLng(39.9, 116.41))
-//        })
-
         map.addPolyline(PolylineOptions().apply {
             color(Color.RED)
             width(5f)
