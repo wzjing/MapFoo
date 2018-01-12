@@ -62,9 +62,9 @@
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:orientation="vertical"
-        app:behavior_hideable="false"
-        app:behavior_peekHeight="60dp"
-        app:layout_behavior="@string/bottom_sheet_behavior">
+        app:fullscreen_hideable="false"
+        app:fullscreen_peekHeight="60dp"
+        app:layout_behavior="com.infinitytech.mapfoo.FullScreenBehavior">
 
 
         <ImageView

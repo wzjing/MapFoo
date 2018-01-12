@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="FullScreenBehavior_layout">
+        <attr format="dimension" name="fullscreen_peekHeight">
+            <enum name="auto" value="-1"/>
+        </attr>
+        <attr format="boolean" name="fullscreen_hideable"/>
+        <attr format="boolean" name="fullscreen_skipCollapsed"/>
+    </declare-styleable>
+</resources>
