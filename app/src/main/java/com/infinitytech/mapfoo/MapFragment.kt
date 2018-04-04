@@ -4,9 +4,10 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.opengl.GLES30
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
-import android.support.v4.app.Fragment
+import android.support.design.widget.BottomSheetDialog
 import android.support.v4.app.LoaderManager
 import android.support.v4.content.AsyncTaskLoader
 import android.support.v4.content.Loader
@@ -21,13 +22,15 @@ import com.amap.api.maps.CameraUpdateFactory
 import com.amap.api.maps.CustomRenderer
 import com.amap.api.maps.model.*
 import kotlinx.android.synthetic.main.fragment_map.*
+import me.yokeyword.fragmentation_swipeback.SwipeBackFragment
 import org.jetbrains.anko.doAsync
 import pl.droidsonroids.gif.GifDrawable
 import java.util.*
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class MapFragment : Fragment(), LoaderManager.LoaderCallbacks<Boolean> {
+class MapFragment : SwipeBackFragment(), LoaderManager.LoaderCallbacks<Boolean> {
+
 
     private val i = { msg: String -> Log.i(MapFragment::class.simpleName, msg) }
     private val d = { msg: String -> Log.d(MapFragment::class.simpleName, msg) }
@@ -36,16 +39,15 @@ class MapFragment : Fragment(), LoaderManager.LoaderCallbacks<Boolean> {
     private lateinit var marker: Marker
     private lateinit var nextFrame: (count: Int) -> BitmapDescriptor
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         Log.d(ktag, "onCreateView")
-        return inflater!!.inflate(R.layout.fragment_map, container, false)
+        return attachToSwipeBack(inflater.inflate(R.layout.fragment_map, container, false))
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Log.d(ktag, "ViewCreated")
         super.onViewCreated(view, savedInstanceState)
-
         val map = mapView.map
         map.mapType = AMap.MAP_TYPE_NORMAL
 
@@ -94,19 +96,25 @@ class MapFragment : Fragment(), LoaderManager.LoaderCallbacks<Boolean> {
         val big = LatLngBounds(LatLng(39.88, 116.38), LatLng(39.92, 116.42))
         map.moveCamera(CameraUpdateFactory.newLatLngBounds(big, 15))
         BottomSheetBehavior.from(bottomSheet).setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 when (newState) {
                     BottomSheetBehavior.STATE_EXPANDED -> map.animateCamera(CameraUpdateFactory.newLatLngBounds(small, 15))
                     BottomSheetBehavior.STATE_COLLAPSED -> map.animateCamera(CameraUpdateFactory.newLatLngBounds(big, 15))
                 }
             }
-
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
-
         })
 
-        backBtn.setOnClickListener { fragmentManager.popBackStack() }
-
+//        val dialog = MyBottomDialog(context)
+        backBtn.setOnClickListener { fragmentManager?.popBackStack() }
+        headerTv.setOnClickListener {
+            fragmentManager!!.beginTransaction()
+                .setCustomAnimations(R.anim.fragment_enter, R.anim.fragment_exit)
+                .add(R.id.mapLayout, TextFragment.newInstance(), "textFragment")
+                .addToBackStack("textFragment")
+                .commit()
+        }
     }
 
     private val renderer = object : CustomRenderer {
@@ -115,14 +123,17 @@ class MapFragment : Fragment(), LoaderManager.LoaderCallbacks<Boolean> {
 
         override fun OnMapReferencechanged() {}
 
+        override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
+            TriangleLib.init()
+        }
+
         override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
+            TriangleLib.resize(width, height)
             lastFrameTime = System.currentTimeMillis()
         }
 
-        override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
-        }
-
         override fun onDrawFrame(gl: GL10?) {
+            TriangleLib.step()
             val realStamp: Int = (System.currentTimeMillis() - lastFrameTime).toInt()
             if (realStamp > timeStamp) {
                 i("Refreshing")
@@ -131,6 +142,8 @@ class MapFragment : Fragment(), LoaderManager.LoaderCallbacks<Boolean> {
                 }
                 lastFrameTime = System.currentTimeMillis()
             }
+
+//            GLES30.glClear(GLES30.GL_)
         }
     }
 
@@ -178,13 +191,15 @@ class MapFragment : Fragment(), LoaderManager.LoaderCallbacks<Boolean> {
 
     /* --------------------Data----------------------- */
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Boolean> {
-        return MapLoader(context)
+        return MapLoader(context!!)
     }
 
-    override fun onLoaderReset(loader: Loader<Boolean>?) {
+    override fun onLoaderReset(loader: Loader<Boolean>) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun onLoadFinished(loader: Loader<Boolean>?, data: Boolean?) {
+    override fun onLoadFinished(loader: Loader<Boolean>, data: Boolean?) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     companion object {
@@ -199,4 +214,11 @@ class MapLoader(context: Context) : AsyncTaskLoader<Boolean>(context) {
         return true
     }
 
+}
+
+class MyBottomDialog(context: Context) : BottomSheetDialog(context) {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.bottom_dialog)
+    }
 }

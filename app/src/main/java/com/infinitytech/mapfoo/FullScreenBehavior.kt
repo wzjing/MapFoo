@@ -3,7 +3,6 @@ package com.infinitytech.mapfoo
 import android.content.Context
 import android.os.Parcel
 import android.os.Parcelable
-import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.CoordinatorLayout
 import android.support.v4.math.MathUtils
 import android.support.v4.view.ViewCompat
@@ -16,15 +15,15 @@ import java.lang.ref.WeakReference
 class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
     : CoordinatorLayout.Behavior<V>(context, attrs) {
 
-    public class BottomSheetCallback {
-        public var stateChange: ((bottomSheet: View, newState: Int) -> Unit)? = null
-        public var slide: ((bottomSheet: View, slideOffset: Float) -> Unit)? = null
+    public class FullScreenCallback {
+        public var stateChange: ((fullScreen: View, newState: Int) -> Unit)? = null
+        public var slide: ((fullScreen: View, slideOffset: Float) -> Unit)? = null
 
-        public fun onStateChange(stateChange: (bottomSheet: View, newState: Int) -> Unit) {
+        public fun onStateChange(stateChange: (fullScreen: View, newState: Int) -> Unit) {
             this.stateChange = stateChange
         }
 
-        public fun onSlide(slide: (bottomSheet: View, slideOffset: Float) -> Unit) {
+        public fun onSlide(slide: (fullScreen: View, slideOffset: Float) -> Unit) {
             this.slide = slide
         }
     }
@@ -39,16 +38,16 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
         public val STATE_COLLAPSED = 4
         public val STATE_HIDDEN = 5
 
-        public inline fun <reified V : View> from(view: V): BottomSheetBehavior<V> {
+        public inline fun <reified V : View> from(view: V): FullScreenBehavior<V> {
             val params = view.layoutParams
             if (params is CoordinatorLayout.LayoutParams) {
                 val behavior = params.behavior
-                if (behavior is BottomSheetBehavior) {
+                if (behavior is FullScreenBehavior) {
                     @Suppress("UNCHECKED_CAST")
-                    return behavior as BottomSheetBehavior<V>
+                    return behavior as FullScreenBehavior<V>
                 } else {
                     throw IllegalArgumentException(
-                            "The view is not associated with BottomSheetBehavior")
+                            "The view is not associated with FullScreenBehavior")
                 }
             } else {
                 throw IllegalArgumentException("The view is not a child of CoordinatorLayout")
@@ -67,11 +66,17 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
     private var mIgnoreEvents: Boolean = false
     private var mTouchEventScrollingChild: Boolean = false
     private var mViewDragHelper: ViewDragHelper? = null
-    private var mVelocityTracker = lazy { VelocityTracker.obtain() }
+    private var mVelocityTracker: VelocityTracker? = null
+        get() {
+            if (field == null) {
+                field = VelocityTracker.obtain()
+            }
+            return field
+        }
     private var mMaximumVelocity: Float = 0f
     private var mActivePointerId: Int = 0
     private var mInitialY: Int = 0
-    private var mLastNestedScrollBy: Int = 0
+    private var mLastNestedScrollDy: Int = 0
     private var mPeekHeightAuto: Boolean = false
     private var mPeekHeightMin: Int = 0
 
@@ -79,7 +84,7 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
 
     public var skipCollapsed: Boolean = false
 
-    public var state: Int = 0
+    public var state: Int = STATE_COLLAPSED
         set(value) {
             if (field == value) return
             if (mViewRef == null) {
@@ -93,17 +98,17 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
             child ?: return
             val parent = child.parent
             if (parent != null && parent.isLayoutRequested && ViewCompat.isAttachedToWindow(child)) {
-                child.post{
-                    startSettlingAnimation(child, state)
+                child.post {
+                    startSettlingAnimation(child, value)
                 }
             } else {
-                startSettlingAnimation(child, state)
+                startSettlingAnimation(child, value)
             }
 
 
         }
 
-    public var peekHeight: Int = 100
+    public var peekHeight: Int = 0
         set(value) {
             var layout = false
             if (value == PEEK_HEIGHT_AUTO) {
@@ -111,10 +116,10 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
                     mPeekHeightAuto = true
                     layout = true
                 }
-            } else if (mPeekHeightAuto || this.peekHeight != value) {
+            } else if (mPeekHeightAuto || field != value) {
                 mPeekHeightAuto = false
                 field = Math.max(0, value)
-                mMaxOffset = mParentHeight - field
+                mMaxOffset = mParentHeight - value
                 layout = true
             }
             if (layout && mState == STATE_COLLAPSED) {
@@ -123,9 +128,9 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
         }
         get() = if (mPeekHeightAuto) PEEK_HEIGHT_AUTO else field
 
-    private var callback: BottomSheetCallback? = null
-    public fun bottomSheetCallback(init: BottomSheetCallback.() -> Unit) {
-        callback = BottomSheetCallback()
+    private var callback: FullScreenCallback? = null
+    public fun fullScreenCallback(init: FullScreenCallback.() -> Unit) {
+        callback = FullScreenCallback()
         callback?.init()
     }
 
@@ -175,7 +180,7 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
                 } else {
                     this.peekHeight
                 }
-        mMinOffset = 0
+        mMinOffset = Math.max(0, mParentHeight - child.height)
         mMaxOffset = Math.max(mParentHeight - peekHeight, mMinOffset)
 
         when {
@@ -209,7 +214,7 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
             reset()
         }
 
-        mVelocityTracker.value.addMovement(event)
+        mVelocityTracker?.addMovement(event)
         when (action) {
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 mTouchEventScrollingChild = false
@@ -227,6 +232,8 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
                     mActivePointerId = event.getPointerId(event.actionIndex)
                     mTouchEventScrollingChild = true
                 }
+                mIgnoreEvents = mActivePointerId == MotionEvent.INVALID_POINTER_ID &&
+                        parent?.isPointInChildBounds(child, initialX, mInitialY) == false
             }
         }
 
@@ -253,7 +260,7 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
         if (action == MotionEvent.ACTION_DOWN) {
             reset()
         }
-        mVelocityTracker.value.addMovement(event)
+        mVelocityTracker?.addMovement(event)
         if (action == MotionEvent.ACTION_MOVE && !mIgnoreEvents) {
             if (Math.abs(mInitialY - event.y) > mViewDragHelper?.touchSlop ?: 0) {
                 mViewDragHelper?.captureChildView(child, event.getPointerId(event.actionIndex))
@@ -265,7 +272,7 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
     override fun onStartNestedScroll(coordinatorLayout: CoordinatorLayout, child: V,
                                      directTargetChild: View, target: View, axes: Int,
                                      type: Int): Boolean {
-        mNestedScrollDy = 0
+        mLastNestedScrollDy = 0
         mNestedScrolled = false
         return (axes and ViewCompat.SCROLL_AXIS_VERTICAL) != 0
     }
@@ -273,7 +280,7 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
     override fun onNestedPreScroll(coordinatorLayout: CoordinatorLayout, child: V, target: View,
                                    dx: Int, dy: Int, consumed: IntArray, type: Int) {
         val scrollChild = mNestedScrollingChildRef?.get()
-        if (scrollChild != null) {
+        if (target != scrollChild) {
             return
         }
         val currentTop = child.top
@@ -295,11 +302,12 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
                 setStateInternal(STATE_DRAGGING)
             } else {
                 consumed[1] = currentTop - mMaxOffset
+                ViewCompat.offsetTopAndBottom(child, -consumed[1])
             }
         }
         dispatchOnSlide(child.top)
-        mLastNestedScrollBy = dy
-        mNestedScrolled = false
+        mLastNestedScrollDy = dy
+        mNestedScrolled = true
     }
 
     override fun onStopNestedScroll(coordinatorLayout: CoordinatorLayout, child: V,
@@ -308,13 +316,14 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
             setStateInternal(STATE_EXPANDED)
             return
         }
-        if (mNestedScrollingChildRef == null || target != mNestedScrollingChildRef?.get() || !mNestedScrolled) {
+        if (mNestedScrollingChildRef == null || target != mNestedScrollingChildRef?.get()
+                || !mNestedScrolled) {
             return
         }
         val top: Int
         val targetState: Int
         when {
-            mLastNestedScrollBy > 0 -> {
+            mLastNestedScrollDy > 0 -> {
                 top = mMinOffset
                 targetState = STATE_HIDDEN
             }
@@ -322,7 +331,7 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
                 top = mParentHeight
                 targetState = STATE_HIDDEN
             }
-            mLastNestedScrollBy == 0 -> {
+            mLastNestedScrollDy == 0 -> {
                 val currentTop = child.top
                 if (Math.abs(currentTop - mMinOffset) < Math.abs(currentTop - mMaxOffset)) {
                     top = mMaxOffset
@@ -360,13 +369,14 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
     private fun setStateInternal(state: Int) {
         if (mState == state) return
         mState = state
-        val bottomSheet = mViewRef?.get()
-        callback?.stateChange?.invoke(bottomSheet ?: return, state)
+        val fullScreen = mViewRef?.get()
+        callback?.stateChange?.invoke(fullScreen ?: return, state)
     }
 
     private fun reset() {
         mActivePointerId = ViewDragHelper.INVALID_POINTER
-        mVelocityTracker.value.recycle()
+        mVelocityTracker?.recycle()
+        mVelocityTracker = null
     }
 
     private fun shouldHide(child: View, yVel: Float): Boolean {
@@ -387,8 +397,8 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
     }
 
     private fun getYVelocity(): Float {
-        mVelocityTracker.value.computeCurrentVelocity(1000, mMaximumVelocity)
-        return mVelocityTracker.value.getYVelocity(mActivePointerId)
+        mVelocityTracker?.computeCurrentVelocity(1000, mMaximumVelocity)
+        return mVelocityTracker?.getYVelocity(mActivePointerId) ?: 0f
     }
 
     fun startSettlingAnimation(child: View, state: Int) {
@@ -408,7 +418,7 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
     }
 
     private val mDragCallback = object : ViewDragHelper.Callback() {
-        override fun tryCaptureView(child: View?, pointerId: Int): Boolean {
+        override fun tryCaptureView(child: View, pointerId: Int): Boolean {
             if (mState == STATE_DRAGGING) {
                 return false
             }
@@ -424,7 +434,7 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
             return mViewRef != null && (mViewRef?.get() == child)
         }
 
-        override fun onViewPositionChanged(changedView: View?, left: Int, top: Int, dx: Int, dy: Int) {
+        override fun onViewPositionChanged(changedView: View, left: Int, top: Int, dx: Int, dy: Int) {
             dispatchOnSlide(top)
         }
 
@@ -434,17 +444,17 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
             }
         }
 
-        override fun onViewReleased(releasedChild: View?, xvel: Float, yvel: Float) {
+        override fun onViewReleased(releasedChild: View, xvel: Float, yvel: Float) {
             val top: Int
             val targetState: Int
             if (yvel < 0) {
                 top = mMinOffset
                 targetState = STATE_EXPANDED
-            } else if (hideable && shouldHide(releasedChild!!, yvel)) {
+            } else if (hideable && shouldHide(releasedChild, yvel)) {
                 top = mParentHeight
                 targetState = STATE_HIDDEN
             } else if (yvel == 0.0f) {
-                val currentTop = releasedChild!!.top
+                val currentTop = releasedChild.top
                 if (Math.abs(currentTop - mMinOffset) < Math.abs(currentTop - mMaxOffset)) {
                     top = mMinOffset
                     targetState = STATE_EXPANDED
@@ -456,36 +466,36 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
                 top = mMaxOffset
                 targetState = STATE_COLLAPSED
             }
-            if (mViewDragHelper?.settleCapturedViewAt(releasedChild!!.left, top) == true) {
+            if (mViewDragHelper?.settleCapturedViewAt(releasedChild.left, top) == true) {
                 setStateInternal(STATE_SETTLING)
                 ViewCompat.postOnAnimation(releasedChild,
-                        SettleRunnable(releasedChild!!, targetState))
+                        SettleRunnable(releasedChild, targetState))
             } else {
                 setStateInternal(targetState)
             }
         }
 
-        override fun clampViewPositionVertical(child: View?, top: Int, dy: Int): Int {
+        override fun clampViewPositionVertical(child: View, top: Int, dy: Int): Int {
             return MathUtils.clamp(top, mMinOffset, if (hideable) mParentHeight else mMaxOffset)
         }
 
-        override fun clampViewPositionHorizontal(child: View?, left: Int, dx: Int): Int {
-            return child?.left ?: 0
+        override fun clampViewPositionHorizontal(child: View, left: Int, dx: Int): Int {
+            return child.left ?: 0
         }
 
-        override fun getViewVerticalDragRange(child: View?): Int {
+        override fun getViewVerticalDragRange(child: View): Int {
             return if (hideable) mParentHeight - mMinOffset else mMaxOffset - mMinOffset
         }
     }
 
     private fun dispatchOnSlide(top: Int) {
-        val bottomSheet = mViewRef!!.get()
-        if (bottomSheet != null && callback != null) {
+        val fullScreen = mViewRef!!.get()
+        if (fullScreen != null && callback != null) {
             if (top > mMinOffset) {
-                callback?.slide?.invoke(bottomSheet, (mMaxOffset - top).toFloat() /
+                callback?.slide?.invoke(fullScreen, (mMaxOffset - top).toFloat() /
                         (mParentHeight - mMaxOffset))
             } else {
-                callback?.slide?.invoke(bottomSheet, (mMaxOffset - top).toFloat() /
+                callback?.slide?.invoke(fullScreen, (mMaxOffset - top).toFloat() /
                         (mMaxOffset - mMinOffset))
             }
         }
@@ -505,7 +515,7 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
     private class SavedState : AbsSavedState {
         val state: Int
 
-        constructor(source: Parcel, loader: ClassLoader? = null) : super(source, loader) {
+        constructor(source: Parcel, loader: ClassLoader? = null) : super(source) {
             state = source.readInt()
         }
 
@@ -513,24 +523,42 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
             this.state = state
         }
 
+        constructor(parcel: Parcel) : super(parcel) {
+            state = parcel.readInt()
+        }
+
         override fun writeToParcel(dest: Parcel?, flags: Int) {
             super.writeToParcel(dest, flags)
             dest?.writeInt(state)
         }
 
-        public val CREATOR: Parcelable.Creator<SavedState> = object : Parcelable.ClassLoaderCreator<SavedState> {
-            override fun createFromParcel(source: Parcel?): SavedState {
-                return SavedState(source!!)
-            }
+//        public val CREATOR: Parcelable.Creator<SavedState> = object : Parcelable.ClassLoaderCreator<SavedState> {
+//            override fun createFromParcel(source: Parcel?): SavedState {
+//                return SavedState(source!!)
+//            }
+//
+//            override fun createFromParcel(source: Parcel?, loader: ClassLoader?): SavedState {
+//                return SavedState(source!!, loader)
+//            }
+//
+//            override fun newArray(size: Int): Array<SavedState?> {
+//                return arrayOfNulls(size)
+//            }
+//
+//        }
 
-            override fun createFromParcel(source: Parcel?, loader: ClassLoader?): SavedState {
-                return SavedState(source!!, loader)
+        override fun describeContents(): Int {
+            return 0
+        }
+
+        companion object CREATOR : Parcelable.Creator<SavedState> {
+            override fun createFromParcel(parcel: Parcel): SavedState {
+                return SavedState(parcel)
             }
 
             override fun newArray(size: Int): Array<SavedState?> {
                 return arrayOfNulls(size)
             }
-
         }
     }
 
