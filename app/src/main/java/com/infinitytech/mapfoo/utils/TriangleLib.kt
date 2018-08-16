@@ -1,4 +1,4 @@
-package com.infinitytech.mapfoo
+package com.infinitytech.mapfoo.utils
 
 class TriangleLib {
     companion object {

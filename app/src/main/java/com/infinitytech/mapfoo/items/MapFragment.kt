@@ -1,4 +1,4 @@
-package com.infinitytech.mapfoo
+package com.infinitytech.mapfoo.items
 
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -14,6 +14,10 @@ import com.amap.api.maps.AMap
 import com.amap.api.maps.CameraUpdateFactory
 import com.amap.api.maps.CustomRenderer
 import com.amap.api.maps.model.*
+import com.infinitytech.mapfoo.*
+import com.infinitytech.mapfoo.utils.TriangleLib
+import com.infinitytech.mapfoo.utils.d
+import com.infinitytech.mapfoo.utils.i
 import kotlinx.android.synthetic.main.fragment_map.*
 import me.yokeyword.fragmentation_swipeback.SwipeBackFragment
 import org.jetbrains.anko.doAsync
@@ -135,7 +139,7 @@ class MapFragment : SwipeBackFragment() {
         headerTv.setOnClickListener {
             fragmentManager!!.beginTransaction()
                     .setCustomAnimations(R.anim.fragment_enter, R.anim.fragment_exit)
-                    .add(R.id.mapLayout, TextFragment.newInstance(), "textFragment")
+                    .add(R.id.fragmentLayout, TextFragment.newInstance(), "textFragment")
                     .addToBackStack("textFragment")
                     .commit()
         }

@@ -1,9 +1,10 @@
-package com.infinitytech.mapfoo
+package com.infinitytech.mapfoo.items
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.infinitytech.mapfoo.R
 import kotlinx.android.synthetic.main.fragment_text.*
 import me.yokeyword.fragmentation_swipeback.SwipeBackFragment
 

@@ -8,21 +8,37 @@
     tools:context="com.infinitytech.mapfoo.MainActivity">
 
     <Button
-        android:id="@+id/goBtn"
+        android:id="@+id/mapBtn"
         style="@style/Base.Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Show Map"
         android:textAllCaps="false"
-        android:textSize="20sp"
+        android:textSize="16dp"
+        android:typeface="monospace"
+        app:layout_constraintBottom_toTopOf="@id/locationBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <Button
+        android:id="@+id/locationBtn"
+        style="@style/Base.Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Select Location"
+        android:textAllCaps="false"
+        android:textSize="16sp"
         android:typeface="monospace"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/mapBtn" />
 
     <FrameLayout
-        android:id="@+id/mapLayout"
+        android:id="@+id/fragmentLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:elevation="8dp"

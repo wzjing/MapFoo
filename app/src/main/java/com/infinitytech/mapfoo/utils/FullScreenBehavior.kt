@@ -1,4 +1,4 @@
-package com.infinitytech.mapfoo
+package com.infinitytech.mapfoo.utils
 
 import android.content.Context
 import android.os.Parcel
@@ -9,6 +9,7 @@ import android.support.v4.view.ViewCompat
 import android.support.v4.widget.ViewDragHelper
 import android.util.AttributeSet
 import android.view.*
+import com.infinitytech.mapfoo.R
 import java.lang.ref.WeakReference
 
 @Suppress("RedundantVisibilityModifier", "unused", "MemberVisibilityCanPrivate")
@@ -149,11 +150,11 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
         mMaximumVelocity = ViewConfiguration.get(context).scaledMaximumFlingVelocity.toFloat()
     }
 
-    override fun onSaveInstanceState(parent: CoordinatorLayout?, child: V): Parcelable {
-        return SavedState(super.onSaveInstanceState(parent, child), mState)
+    override fun onSaveInstanceState(parent: CoordinatorLayout, child: V): Parcelable {
+        return SavedState(super.onSaveInstanceState(parent, child)!!, mState)
     }
 
-    override fun onRestoreInstanceState(parent: CoordinatorLayout?, child: V, state: Parcelable?) {
+    override fun onRestoreInstanceState(parent: CoordinatorLayout, child: V, state: Parcelable) {
         val ss = state as SavedState
         super.onRestoreInstanceState(parent, child, ss.superState)
         mState = if (ss.state == STATE_DRAGGING || ss.state == STATE_SETTLING) {
@@ -163,7 +164,7 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
         }
     }
 
-    override fun onLayoutChild(parent: CoordinatorLayout?, child: V, layoutDirection: Int): Boolean {
+    override fun onLayoutChild(parent: CoordinatorLayout, child: V, layoutDirection: Int): Boolean {
         parent!!
         if (ViewCompat.getFitsSystemWindows(parent) && !ViewCompat.getFitsSystemWindows(child)) {
             child.fitsSystemWindows = true
@@ -203,7 +204,7 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
         return true
     }
 
-    override fun onInterceptTouchEvent(parent: CoordinatorLayout?, child: V, event: MotionEvent): Boolean {
+    override fun onInterceptTouchEvent(parent: CoordinatorLayout, child: V, event: MotionEvent): Boolean {
         if (!child.isShown) {
             mIgnoreEvents = true
             return false
@@ -248,7 +249,7 @@ class FullScreenBehavior<V : View>(context: Context, attrs: AttributeSet?)
                 Math.abs(mInitialY - event.y) > mViewDragHelper?.touchSlop ?: 0
     }
 
-    override fun onTouchEvent(parent: CoordinatorLayout?, child: V, event: MotionEvent): Boolean {
+    override fun onTouchEvent(parent: CoordinatorLayout, child: V, event: MotionEvent): Boolean {
         if (!child.isShown) {
             return false
         }
