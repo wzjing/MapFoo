@@ -3,7 +3,7 @@
 package com.infinitytech.mapfoo.utils
 
 import android.app.Activity
-import android.support.transition.Transition
+import android.transition.Transition
 import android.support.v4.app.Fragment
 import android.util.Log
 

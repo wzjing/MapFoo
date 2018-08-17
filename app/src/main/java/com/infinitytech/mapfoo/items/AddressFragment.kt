@@ -2,9 +2,7 @@ package com.infinitytech.mapfoo.items
 
 import android.os.Bundle
 import android.support.constraint.ConstraintSet
-import android.support.transition.AutoTransition
-import android.support.transition.TransitionManager
-import android.transition.Transition
+import android.transition.*
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,17 +14,17 @@ import com.infinitytech.mapfoo.utils.onclick
 import kotlinx.android.synthetic.main.search_bar_normal.*
 import me.yokeyword.fragmentation_swipeback.SwipeBackFragment
 
-class LocationSelectorFragment : SwipeBackFragment() {
+class AddressFragment : SwipeBackFragment() {
 
     private var stateNormal = ConstraintSet()
     private var stateFocused = ConstraintSet()
 
     companion object {
-        fun newInstance(): LocationSelectorFragment = LocationSelectorFragment()
+        fun newInstance(): AddressFragment = AddressFragment()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return attachToSwipeBack(inflater.inflate(R.layout.fragment_location_selector, container, false))
+        return attachToSwipeBack(inflater.inflate(R.layout.fragment_address, container, false))
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -39,35 +37,34 @@ class LocationSelectorFragment : SwipeBackFragment() {
             fragmentManager?.popBackStack()
         }
 
+        view.onclick {
+            it.requestFocus()
+        }
+
         addressEtv.onFocus {
-            val transition = AutoTransition()
-            transition.duration = 300
+            val set = TransitionSet()
+            set.ordering = TransitionSet.ORDERING_TOGETHER
+            set.addTransition(Fade(Fade.OUT).apply { duration = 120 })
+                    .addTransition(ChangeBounds()).apply { duration = 200 }
+                    .addTransition(Fade(Fade.IN).apply { duration = 120 })
 
             if (it) {
-                transition.addListener {
-                    onStart {
-                        d("start Transition")
-                    }
-
+                set.addListener {
                     onEnd {
                         addressEtv.isCursorVisible = true
                         d("end Transition")
                     }
                 }
-                TransitionManager.beginDelayedTransition(searchBar, transition)
+                TransitionManager.beginDelayedTransition(searchBar, set)
                 stateFocused.applyTo(searchBar)
             } else {
-                transition.addListener {
+                set.addListener {
                     onStart {
                         d("start Transition")
                         addressEtv.isCursorVisible = false
                     }
-
-                    onEnd {
-                        d("end Transition")
-                    }
                 }
-                TransitionManager.beginDelayedTransition(searchBar, transition)
+                TransitionManager.beginDelayedTransition(searchBar, set)
                 stateNormal.applyTo(searchBar)
             }
         }

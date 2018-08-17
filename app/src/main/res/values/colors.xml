@@ -4,6 +4,6 @@
     <color name="colorPrimaryDark">#007c71</color>
     <color name="colorAccent">#009688</color>
 
-    <color name="colorStroke">#989898</color>
-    <color name="colorStrokeFocused">#000000</color>
+    <color name="colorStroke">#a6a6a6</color>
+    <color name="colorStrokeFocused">#e7e7e7</color>
 </resources>

@@ -10,7 +10,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:background="@null"
@@ -23,6 +22,7 @@
     <EditText
         android:id="@+id/addressEtv"
         android:layout_width="0dp"
+        android:gravity="start|center_vertical"
         android:layout_height="0dp"
         android:background="@drawable/bg_edit_text"
         android:cursorVisible="true"
@@ -30,7 +30,7 @@
         android:inputType="text"
         android:paddingStart="8dp"
         android:paddingTop="4dp"
-        android:paddingEnd="8dp"
+        android:paddingEnd="48dp"
         android:paddingBottom="4dp"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -39,11 +39,22 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
+        android:id="@+id/cancelBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:background="@null"
+        android:src="@drawable/ic_twotone_cancel_24px"
+        app:layout_constraintBottom_toBottomOf="@id/addressEtv"
+        app:layout_constraintEnd_toEndOf="@id/addressEtv"
+        app:layout_constraintTop_toTopOf="@id/addressEtv"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <ImageButton
         android:id="@+id/searchBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
         android:background="@null"
         android:src="@drawable/ic_twotone_search_24px"
         android:visibility="gone"

@@ -14,19 +14,19 @@ import com.amap.api.maps.AMap
 import com.amap.api.maps.CameraUpdateFactory
 import com.amap.api.maps.CustomRenderer
 import com.amap.api.maps.model.*
-import com.infinitytech.mapfoo.*
+import com.infinitytech.mapfoo.BaseFragment
+import com.infinitytech.mapfoo.R
 import com.infinitytech.mapfoo.utils.TriangleLib
 import com.infinitytech.mapfoo.utils.d
 import com.infinitytech.mapfoo.utils.i
 import kotlinx.android.synthetic.main.fragment_map.*
-import me.yokeyword.fragmentation_swipeback.SwipeBackFragment
 import org.jetbrains.anko.doAsync
 import pl.droidsonroids.gif.GifDrawable
 import java.util.*
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class MapFragment : SwipeBackFragment() {
+class MapFragment : BaseFragment() {
 
 
     private lateinit var marker: Marker
