@@ -43,6 +43,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".items.AddressActivity"/>
+
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="f36f5db48882cc95f1a58470d3f689f3" />

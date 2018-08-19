@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:text="Show Map"
         android:textAllCaps="false"
-        android:textSize="16dp"
+        android:textSize="16sp"
         android:typeface="monospace"
         app:layout_constraintBottom_toTopOf="@id/locationBtn"
         app:layout_constraintEnd_toEndOf="parent"

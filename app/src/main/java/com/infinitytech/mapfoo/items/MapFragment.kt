@@ -20,7 +20,7 @@ import com.infinitytech.mapfoo.utils.TriangleLib
 import com.infinitytech.mapfoo.utils.d
 import com.infinitytech.mapfoo.utils.i
 import kotlinx.android.synthetic.main.fragment_map.*
-import org.jetbrains.anko.doAsync
+import kotlinx.coroutines.experimental.async
 import pl.droidsonroids.gif.GifDrawable
 import java.util.*
 import javax.microedition.khronos.egl.EGLConfig
@@ -110,7 +110,7 @@ class MapFragment : BaseFragment() {
                     i("Refreshing")
                     d("Projection: ${map.projectionMatrix.joinToString { it.toString() }}")
                     d("Camera:     Bearing ${map.cameraPosition.bearing} Tilt ${map.cameraPosition.tilt} Zoom ${map.cameraPosition.zoom}")
-                    doAsync @Synchronized {
+                    async {
                         marker.setIcon(nextFrame(realStamp / timeStamp))
                     }
                     lastFrameTime = System.currentTimeMillis()

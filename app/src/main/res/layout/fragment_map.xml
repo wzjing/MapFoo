@@ -39,7 +39,7 @@
                     android:layout_marginStart="16dp"
                     android:background="@null"
                     android:scaleType="centerInside"
-                    android:src="@drawable/ic_arrow_back_black_24dp"
+                    android:src="@drawable/ic_arrow_back_black"
                     tools:layout_marginStart="20dp" />
 
             </RelativeLayout>

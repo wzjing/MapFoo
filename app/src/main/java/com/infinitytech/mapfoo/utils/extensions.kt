@@ -7,17 +7,17 @@ import android.transition.Transition
 import android.support.v4.app.Fragment
 import android.util.Log
 
-inline fun <reified T: Activity> T.v(message: String) = Log.d(T::class.simpleName, message)
-inline fun <reified T: Activity> T.w(message: String) = Log.d(T::class.simpleName, message)
-inline fun <reified T: Activity> T.d(message: String) = Log.d(T::class.simpleName, message)
-inline fun <reified T: Activity> T.i(message: String) = Log.d(T::class.simpleName, message)
-inline fun <reified T: Activity> T.e(message: String) = Log.d(T::class.simpleName, message)
+inline fun <reified T : Activity> T.v(message: String) = Log.v(T::class.simpleName, message)
+inline fun <reified T : Activity> T.d(message: String) = Log.d(T::class.simpleName, message)
+inline fun <reified T : Activity> T.i(message: String) = Log.i(T::class.simpleName, message)
+inline fun <reified T : Activity> T.w(message: String) = Log.w(T::class.simpleName, message)
+inline fun <reified T : Activity> T.e(message: String) = Log.e(T::class.simpleName, message)
 
-inline fun <reified T: Fragment> T.v(message: String) = Log.d(T::class.simpleName, message)
-inline fun <reified T: Fragment> T.w(message: String) = Log.d(T::class.simpleName, message)
-inline fun <reified T: Fragment> T.d(message: String) = Log.d(T::class.simpleName, message)
-inline fun <reified T: Fragment> T.i(message: String) = Log.d(T::class.simpleName, message)
-inline fun <reified T: Fragment> T.e(message: String) = Log.d(T::class.simpleName, message)
+inline fun <reified T : Fragment> T.v(message: String) = Log.v(T::class.simpleName, message)
+inline fun <reified T : Fragment> T.d(message: String) = Log.d(T::class.simpleName, message)
+inline fun <reified T : Fragment> T.i(message: String) = Log.i(T::class.simpleName, message)
+inline fun <reified T : Fragment> T.w(message: String) = Log.w(T::class.simpleName, message)
+inline fun <reified T : Fragment> T.e(message: String) = Log.e(T::class.simpleName, message)
 
 class TransitionListenerX {
     var onStart: ((Transition) -> Unit)? = null

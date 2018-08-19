@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ConstraintLayoutStates xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <State
+        android:id="@+id/searchBarNormal"
+        app:constraints="@layout/searchbar_normal" />
+
+    <State
+        android:id="@+id/searchBarFocused"
+        app:constraints="@layout/searchbar_focused" />
+
+</ConstraintLayoutStates>
