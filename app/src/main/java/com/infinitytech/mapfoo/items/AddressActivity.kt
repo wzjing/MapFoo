@@ -1,12 +1,8 @@
 package com.infinitytech.mapfoo.items
 
+import android.graphics.Path
 import android.os.Bundle
-import android.support.v4.view.GestureDetectorCompat
-import android.transition.ChangeBounds
-import android.transition.Fade
-import android.transition.TransitionManager
-import android.transition.TransitionSet
-import android.view.GestureDetector
+import android.transition.*
 import android.view.MotionEvent
 import android.view.inputmethod.EditorInfo
 import com.infinitytech.mapfoo.BaseActivity
@@ -31,13 +27,11 @@ class AddressActivity : BaseActivity() {
 
         cancelBtn.onTouch {
             d("cancel button clicked (${it.action})")
-
             if (it.action == MotionEvent.ACTION_UP) {
                 addressEtv.setText("")
             }
             cancelBtn.onTouchEvent(it)
         }
-
 
         searchBtn.onClick {
             d("search button clicked")
@@ -60,14 +54,49 @@ class AddressActivity : BaseActivity() {
             val set = TransitionSet()
             set.ordering = TransitionSet.ORDERING_TOGETHER
             set.addTransition(Fade(Fade.OUT).apply { duration = 120 })
-                    .addTransition(ChangeBounds()).apply { duration = 200 }
+                    .addTransition(ChangeBounds().apply {
+                        duration = 200
+                        pathMotion = object : PathMotion() {
+                            override fun getPath(startX: Float, startY: Float,
+                                                 endX: Float, endY: Float) = Path().apply {
+                                d("PathMotion: ($startX, $startY) -> ($endX, $endY)")
+                                moveTo(startX, startY)
+                                lineTo(endX, endY)
+//                                rCubicTo(startX, (endY - startY) * 0.5445f,
+//                                        (endX - startX) * 0.4555f, endY,
+//                                        endX - startX, endY - startY)
+                            }
+                        }
+                    })
                     .addTransition(Fade(Fade.IN).apply { duration = 120 })
             TransitionManager.beginDelayedTransition(searchBar, set)
-            searchBar.setState(if (focus) R.id.searchBarFocused else R.id.searchBarNormal, 1080, 1920)
-            if (!focus) addressEtv.hideKeyBoard()
+            if (focus) {
+                searchBar.setState(R.id.searchBarFocused, 1080, 1920)
+                addressEtv.isCursorVisible = true
+            } else {
+                searchBar.setState(R.id.searchBarNormal, 1080, 1920)
+                addressEtv.hideKeyBoard()
+                addressEtv.isCursorVisible = false
+            }
         }
 
+        val map = mapView.map
+        mapView.onCreate(null)
+    }
 
+    override fun onResume() {
+        super.onResume()
+        mapView.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapView.onPause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mapView.onDestroy()
     }
 
 }
