@@ -5,6 +5,9 @@ import android.os.Bundle
 import android.transition.*
 import android.view.MotionEvent
 import android.view.inputmethod.EditorInfo
+import com.amap.api.maps.CameraUpdateFactory
+import com.amap.api.maps.model.CameraPositionCreator
+import com.amap.api.maps.model.LatLng
 import com.infinitytech.mapfoo.BaseActivity
 import com.infinitytech.mapfoo.R
 import com.infinitytech.mapfoo.utils.*
@@ -62,9 +65,6 @@ class AddressActivity : BaseActivity() {
                                 d("PathMotion: ($startX, $startY) -> ($endX, $endY)")
                                 moveTo(startX, startY)
                                 lineTo(endX, endY)
-//                                rCubicTo(startX, (endY - startY) * 0.5445f,
-//                                        (endX - startX) * 0.4555f, endY,
-//                                        endX - startX, endY - startY)
                             }
                         }
                     })
@@ -80,8 +80,14 @@ class AddressActivity : BaseActivity() {
             }
         }
 
+        mapView.onCreate(savedInstanceState)
         val map = mapView.map
-        mapView.onCreate(null)
+        map.uiSettings.apply {
+            isZoomControlsEnabled = false
+            isRotateGesturesEnabled = false
+        }
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(40.045, 116.3), 14f))
+        map.showMapText(false)
     }
 
     override fun onResume() {

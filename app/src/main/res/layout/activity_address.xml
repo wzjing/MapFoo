@@ -23,7 +23,7 @@
     <android.support.constraint.ConstraintLayout
         android:id="@+id/searchBar"
         android:layout_width="0dp"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="@dimen/searchbar_height"
         android:background="@drawable/bg_rect_white"
         android:elevation="2dp"
         app:layout_constraintBottom_toBottomOf="parent"

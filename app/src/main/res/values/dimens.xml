@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="fullscreen_behavior_peek_height_min">64dp</dimen>
+
+    <dimen name="searchbar_height">48dp</dimen>
 </resources>
