@@ -2,5 +2,8 @@
 <resources>
     <dimen name="fullscreen_behavior_peek_height_min">64dp</dimen>
 
-    <dimen name="searchbar_height">48dp</dimen>
+    <dimen name="searchbar_height">58dp</dimen>
+
+    <dimen name="action_button_width">28dp</dimen>
+    <dimen name="action_button_height">28dp</dimen>
 </resources>

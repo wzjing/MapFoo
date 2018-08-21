@@ -20,5 +20,6 @@ class MainActivity : BaseActivity() {
         locationBtn.onClick {
             startActivity<AddressActivity>()
         }
+        startActivity<AddressActivity>()
     }
 }

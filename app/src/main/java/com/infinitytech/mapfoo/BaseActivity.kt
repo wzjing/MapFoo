@@ -3,11 +3,12 @@ package com.infinitytech.mapfoo
 import android.annotation.SuppressLint
 import android.support.annotation.IdRes
 import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatActivity
 import me.yokeyword.fragmentation.SupportActivity
 
 
 @SuppressLint("Registered")
-open class BaseActivity : SupportActivity() {
+open class BaseActivity : AppCompatActivity() {
 
     fun push(@IdRes container: Int, fragment: Fragment, tag: String = fragment::class.java.simpleName) {
         supportFragmentManager.beginTransaction()

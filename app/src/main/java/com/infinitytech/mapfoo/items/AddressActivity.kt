@@ -4,9 +4,9 @@ import android.graphics.Path
 import android.os.Bundle
 import android.transition.*
 import android.view.MotionEvent
+import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import com.amap.api.maps.CameraUpdateFactory
-import com.amap.api.maps.model.CameraPositionCreator
 import com.amap.api.maps.model.LatLng
 import com.infinitytech.mapfoo.BaseActivity
 import com.infinitytech.mapfoo.R
@@ -17,10 +17,16 @@ class AddressActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        minApi(23) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+        }
         setContentView(R.layout.activity_address)
 
-        searchBar.loadLayoutDescription(R.xml.searchbar_states)
+        minApi(23) {
+            rootView.bottomMargin = navigationbarHeight
+        }
 
+        searchBar.loadLayoutDescription(R.xml.searchbar_states)
         searchBar.setState(R.id.searchBarNormal, 1080, 1920)
 
         backBtn.onClick {
@@ -87,7 +93,7 @@ class AddressActivity : BaseActivity() {
             isRotateGesturesEnabled = false
         }
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(40.045, 116.3), 14f))
-        map.showMapText(false)
+
     }
 
     override fun onResume() {
@@ -103,6 +109,14 @@ class AddressActivity : BaseActivity() {
     override fun onDestroy() {
         super.onDestroy()
         mapView.onDestroy()
+    }
+
+    override fun onBackPressed() {
+        if (addressEtv.hasFocus()) {
+            addressEtv.clearFocus()
+        } else {
+            super.onBackPressed()
+        }
     }
 
 }
