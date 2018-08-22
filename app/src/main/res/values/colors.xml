@@ -8,4 +8,7 @@
     <color name="colorStrokeFocused">#e7e7e7</color>
 
     <color name="colorRipple">#cacaca</color>
+
+    <color name="colorListTitle">#CF000000</color>
+    <color name="colorListContent">#8F000000</color>
 </resources>

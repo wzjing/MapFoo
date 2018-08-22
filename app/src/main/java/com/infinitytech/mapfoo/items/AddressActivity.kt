@@ -2,8 +2,12 @@ package com.infinitytech.mapfoo.items
 
 import android.graphics.Path
 import android.os.Bundle
+import android.support.v4.text.HtmlCompat
+import android.text.Html
+import android.text.SpannableString
 import android.transition.*
 import android.view.MotionEvent
+import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import com.amap.api.maps.CameraUpdateFactory
@@ -79,10 +83,12 @@ class AddressActivity : BaseActivity() {
             if (focus) {
                 searchBar.setState(R.id.searchBarFocused, 1080, 1920)
                 addressEtv.isCursorVisible = true
+                overLay.visibility = View.VISIBLE
             } else {
                 searchBar.setState(R.id.searchBarNormal, 1080, 1920)
                 addressEtv.hideKeyBoard()
                 addressEtv.isCursorVisible = false
+                overLay.visibility = View.GONE
             }
         }
 
@@ -93,7 +99,6 @@ class AddressActivity : BaseActivity() {
             isRotateGesturesEnabled = false
         }
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(40.045, 116.3), 14f))
-
     }
 
     override fun onResume() {
