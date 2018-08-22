@@ -9,6 +9,6 @@
 
     <color name="colorRipple">#cacaca</color>
 
-    <color name="colorListTitle">#CF000000</color>
-    <color name="colorListContent">#8F000000</color>
+    <color name="colorListTitle">#FF707070</color>
+    <color name="colorListContent">#8F707070</color>
 </resources>

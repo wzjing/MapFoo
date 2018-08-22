@@ -13,3 +13,10 @@ inline val Context.navigationbarHeight: Int
         return resources.getDimensionPixelSize(resources.getIdentifier("navigation_bar_height",
                 "dimen", "android"))
     }
+
+val Context.adddresses: Array<Address>
+    get() {
+        val sharedPreferences = getSharedPreferences("Addresses", Context.MODE_PRIVATE)
+        return sharedPreferences.getStringSet("addresses", emptySet())?.map { Address.fromString(it) }?.toTypedArray()
+                ?: emptyArray()
+    }
