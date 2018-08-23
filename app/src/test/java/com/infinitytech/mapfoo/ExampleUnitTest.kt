@@ -14,4 +14,21 @@ class ExampleUnitTest {
     fun addition_isCorrect() {
         assertEquals(4, 2 + 2)
     }
+
+    var list = ArrayList<String>()
+        set(value) {
+            field = value
+        }
+        get() {
+            return field
+        }
+
+    @Test
+    fun collection_modify() {
+        val set = setOf("Alpha", "Beta", "Charlie", "Delta")
+        val arrayList = ArrayList(set)
+        arrayList[3] = "Echo"
+        set.forEach { print("$it ") }
+        arrayList.forEach { print("$it ") }
+    }
 }
