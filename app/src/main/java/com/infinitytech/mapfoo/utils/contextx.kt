@@ -14,9 +14,19 @@ inline val Context.navigationbarHeight: Int
                 "dimen", "android"))
     }
 
-val Context.adddresses: Array<Address>
+var Context.adddresses: Array<Address>
     get() {
-        val sharedPreferences = getSharedPreferences("Addresses", Context.MODE_PRIVATE)
-        return sharedPreferences.getStringSet("addresses", emptySet())?.map { Address.fromString(it) }?.toTypedArray()
+        val sp = getSharedPreferences("Addresses", Context.MODE_PRIVATE)
+        return sp.getStringSet("addresses", emptySet())?.map { Address.fromString(it) }?.toTypedArray()
                 ?: emptyArray()
+    }
+    set(value) {
+        val sp = getSharedPreferences("Addresses", Context.MODE_PRIVATE)
+        val editor = sp.edit()
+        val old = sp.getStringSet("Addresses", emptySet()) ?: emptySet()
+
+        val new = ArrayList(old)
+//        new.add(value.map { it.toString() })
+//        editor.putStringSet("Addresses", result)
+        editor.apply()
     }
