@@ -3,12 +3,12 @@ package com.infinitytech.mapfoo.utils
 import android.content.Context
 import android.os.Parcel
 import android.os.Parcelable
-import android.support.design.widget.CoordinatorLayout
-import android.support.v4.math.MathUtils
-import android.support.v4.view.ViewCompat
-import android.support.v4.widget.ViewDragHelper
 import android.util.AttributeSet
 import android.view.*
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.math.MathUtils
+import androidx.core.view.ViewCompat
+import androidx.customview.widget.ViewDragHelper
 import com.infinitytech.mapfoo.R
 import java.lang.ref.WeakReference
 

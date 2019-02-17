@@ -2,14 +2,12 @@ package com.infinitytech.mapfoo.items
 
 import android.graphics.Path
 import android.os.Bundle
-import android.support.v4.text.HtmlCompat
-import android.text.Html
-import android.text.SpannableString
 import android.transition.*
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
+
 import com.amap.api.maps.CameraUpdateFactory
 import com.amap.api.maps.model.LatLng
 import com.infinitytech.mapfoo.BaseActivity
