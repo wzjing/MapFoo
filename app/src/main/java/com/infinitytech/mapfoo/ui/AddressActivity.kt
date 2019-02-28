@@ -1,4 +1,4 @@
-package com.infinitytech.mapfoo.items
+package com.infinitytech.mapfoo.ui
 
 import android.graphics.Path
 import android.os.Bundle

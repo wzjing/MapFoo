@@ -6,7 +6,7 @@
 #include <android/asset_manager_jni.h>
 #include <GLES3/gl3.h>
 #include <GLES3/gl3ext.h>
-#include "native-utils.h"
+#include "android-utils.h"
 
 //Check OpenGL ES error
 void checkGlError(const char* op);

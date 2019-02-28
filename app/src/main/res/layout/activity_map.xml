@@ -7,12 +7,12 @@
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
-    <com.amap.api.maps.TextureMapView
+    <com.amap.api.maps.MapView
         android:id="@+id/mapView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        tools:background="@sample/map" />
+        tools:background="@sample/map.jpg" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -35,7 +35,6 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bottomSheet"
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
@@ -50,6 +49,7 @@
         android:paddingTop="12dp"
         android:paddingEnd="16dp"
         android:paddingBottom="12dp"
+        android:visibility="gone"
         app:behavior_hideable="false"
         app:behavior_peekHeight="60dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">

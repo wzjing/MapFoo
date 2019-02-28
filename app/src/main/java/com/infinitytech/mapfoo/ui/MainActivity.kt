@@ -1,8 +1,9 @@
-package com.infinitytech.mapfoo
+package com.infinitytech.mapfoo.ui
 
 import android.os.Bundle
-import com.infinitytech.mapfoo.items.AddressActivity
-import com.infinitytech.mapfoo.items.MapActivity
+import com.infinitytech.mapfoo.BaseActivity
+import com.infinitytech.mapfoo.R
+import com.infinitytech.mapfoo.ui.map.MapActivity
 import com.infinitytech.mapfoo.utils.onClick
 import com.infinitytech.mapfoo.utils.startActivity
 import kotlinx.android.synthetic.main.activity_main.*

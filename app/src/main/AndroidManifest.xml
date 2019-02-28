@@ -33,7 +33,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:hardwareAccelerated="true"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -43,8 +43,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".items.MapActivity" android:exported="true" android:theme="@style/Map"/>
-        <activity android:name=".items.AddressActivity" android:exported="true" android:theme="@style/Address"/>
+        <activity android:name=".ui.map.MapActivity" android:exported="true" android:theme="@style/Map"/>
+        <activity android:name=".ui.AddressActivity" android:exported="true" android:theme="@style/Address"/>
 
         <meta-data
             android:name="com.amap.api.v2.apikey"

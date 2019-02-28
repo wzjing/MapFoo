@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context="com.infinitytech.mapfoo.MainActivity">
+    tools:context="com.infinitytech.mapfoo.ui.MainActivity">
 
     <Button
         android:id="@+id/mapBtn"

@@ -1,22 +1,16 @@
-package com.infinitytech.mapfoo.items
+package com.infinitytech.mapfoo.ui.map
 
 import android.graphics.Color
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.view.View
-import android.view.WindowManager
 import com.amap.api.maps.AMap
 import com.amap.api.maps.CameraUpdateFactory
-import com.amap.api.maps.CustomRenderer
 import com.amap.api.maps.model.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.infinitytech.mapfoo.BaseActivity
 import com.infinitytech.mapfoo.R
-import com.infinitytech.mapfoo.utils.TriangleLib
 import com.infinitytech.mapfoo.utils.d
 import kotlinx.android.synthetic.main.activity_map.*
-import javax.microedition.khronos.egl.EGLConfig
-import javax.microedition.khronos.opengles.GL10
 
 class MapActivity : BaseActivity() {
 
@@ -59,22 +53,7 @@ class MapActivity : BaseActivity() {
             }
         })
 
-        map.setCustomRenderer(object : CustomRenderer {
-            override fun OnMapReferencechanged() {
-            }
-
-            override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
-                TriangleLib.init()
-            }
-
-            override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
-                TriangleLib.resize(width, height)
-            }
-
-            override fun onDrawFrame(gl: GL10?) {
-                TriangleLib.step()
-            }
-        })
+        map.setCustomRenderer(JNIRenderer())
 
         val small = LatLngBounds(LatLng(39.84, 116.36), LatLng(39.92, 116.44))
         val big = LatLngBounds(LatLng(39.88, 116.38), LatLng(39.92, 116.42))
